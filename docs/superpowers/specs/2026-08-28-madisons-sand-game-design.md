@@ -42,30 +42,45 @@ engineering constraints regardless of whose child is playing.
 
 ## Phase 0 — the iPad fix (urgent, ships outside the pipeline)
 
-Madison is currently being thrown out of the game mid-play because her drags
-trigger iPadOS system gestures. This is breaking her *today*, so it ships
-directly rather than waiting on pipeline setup.
+Madison is being thrown out of the game mid-play because her drags trigger
+iPadOS system gestures. This is breaking her *today*, so it ships directly
+rather than waiting on pipeline setup.
 
-The problem splits cleanly in two.
+**Revised 2026-08-28 after reading upstream source.** The original draft of this
+section listed in-page gesture containment work that upstream has *already
+done* in its "Phone Support (#15)" feature. Verified present:
 
-**What code can fix — in-page gesture containment:**
+- `touch-action: none` on `html`/`body` and on `.play-area` itself
+- `overscroll-behavior: none`, `user-select: none`, `-webkit-touch-callout: none`
+- `viewport-fit=cover`, `user-scalable=no`, `maximum-scale=1.0`
+- `env(safe-area-inset-*)` padding on all four sides of the toolbar
+- Pointer events with `setPointerCapture`
 
-- `touch-action: none` on the play surface so drags neither scroll nor zoom
-- `overscroll-behavior: none` to kill rubber-band bounce
-- `user-select: none` / `-webkit-touch-callout: none` so long-press does not
-  raise selection handles or the share sheet
-- `viewport-fit=cover` plus `env(safe-area-inset-*)` padding
-- `<meta name="apple-mobile-web-app-capable" content="yes">` so **Add to Home
-  Screen** launches with no Safari chrome. This meta tag needs no manifest
-  file, which is what keeps us inside the single-file principle.
-- A large ⛶ button calling `requestFullscreen()` where iPadOS supports it
+None of that needs rebuilding. That narrows the diagnosis: the page is already
+doing everything a page can do, so what remains is Safari's own chrome and
+iPadOS system gestures.
+
+**What is actually missing, and is what Phase 0 builds:**
+
+1. **`<meta name="apple-mobile-web-app-capable" content="yes">`** plus a status
+   bar style. Without it, **Add to Home Screen** still launches inside Safari
+   with its chrome and its edge behaviors. With it, the game launches
+   standalone — no address bar, no tab strip, and materially fewer ways for a
+   4-year-old to fall out of it. This meta tag needs no manifest file, which is
+   what keeps it inside the single-file principle.
+2. **A fullscreen button.** A large ⛶ control calling `requestFullscreen()`
+   (with the `webkit` prefixed fallback older iPadOS Safari needs). It must
+   **hide itself when unsupported** — a dead button violates the no-failure-
+   states principle.
+3. **Guided Access documentation.** The part code cannot do.
 
 **What code cannot fix — iPadOS system edge gestures.** No web page can block
 the app switcher, Control Center, or the home-indicator swipe. The real answer
 is **Guided Access**: Settings → Accessibility → Guided Access, then
 triple-click the side button to lock the iPad into the game. It can also
 disable chosen screen regions outright. This goes in the README so it is not
-tribal knowledge.
+tribal knowledge, and it is the single highest-value thing Max can do for
+Madison's experience today.
 
 ## Phase 1 — make it hers
 
@@ -190,7 +205,7 @@ phase is independently shippable and gets its own plan:
 
 | Phase | Scope | Route |
 |---|---|---|
-| 0 | iPad gesture containment + fullscreen | Direct — urgent |
+| 0 | Standalone meta, fullscreen button, Guided Access docs | Direct — urgent |
 | 1 | Constitution, pink water, retitle | Direct — precedes the pipeline |
 | 2 | Wing Commander setup | Direct — Max provisions secrets |
 | 3 | Gumdrops | Pipeline |
