@@ -112,7 +112,7 @@ comes out multicolored.
 Explicitly out of scope, considered and cut: dissolving in water, bouncing
 physics, and gumdrop rain. Gumdrops exist to be piled up and chased.
 
-## Phases 4–8 — The poodle
+## Phase 5 — The poodle
 
 The centerpiece, and deliberately **not** a grid element. Moving creatures in a
 cellular automaton are miserable — double-stepping, moved-flag bookkeeping,
@@ -142,10 +142,12 @@ The design consequence worth naming: dropping a gumdrop becomes Madison's way
 to *steer the dog*. That is what makes the poodle and the gumdrops one toy
 rather than two unrelated buttons.
 
-Shipped in that order — each step is independently playable, so she gets
-something new every time.
+Shipped in that order as 5a through 5e — each step is independently playable,
+so she gets something new every time. 5a (trot toward her finger, sparkle
+pawprints) is the smallest thing worth shipping; the rest layer on top without
+reworking it.
 
-## Palm trees
+## Phase 4 — Palm trees
 
 A third object kind alongside rainbow and unicorn, glyph `'🌴'`.
 
@@ -180,6 +182,28 @@ write that exact case. Replace with a single field list driving both functions.
 `{ rainbows, unicorns }`, with a ternary in `listFor()` and a two-loop
 `isCoveredByAnyObject`. Adding palms touches all of it. A record keyed by
 `ObjectKind` makes this and any future kind a one-line change.
+
+## How this decomposes
+
+This document is a **program design, not a single implementation plan**. Each
+phase is independently shippable and gets its own plan:
+
+| Phase | Scope | Route |
+|---|---|---|
+| 0 | iPad gesture containment + fullscreen | Direct — urgent |
+| 1 | Constitution, pink water, retitle | Direct — precedes the pipeline |
+| 2 | Wing Commander setup | Direct — Max provisions secrets |
+| 3 | Gumdrops | Pipeline |
+| 4 | Palm trees | Pipeline |
+| 5a–5e | Poodle behavior loop | Pipeline, one issue per behavior |
+
+Phases 0–2 run directly because they are either urgent or are the thing that
+makes the pipeline exist. Everything from phase 3 on goes through Wing
+Commander as a labeled issue, which is the point of the fork.
+
+The two code-health items are not their own phase. Each rides along with the
+first feature that touches it: the `moveCell` field list lands with gumdrops,
+the keyed `ObjectsState` lands with palm trees.
 
 ## Testing
 
