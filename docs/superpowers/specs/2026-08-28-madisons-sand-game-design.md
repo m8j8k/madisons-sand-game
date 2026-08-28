@@ -112,6 +112,27 @@ comes out multicolored.
 Explicitly out of scope, considered and cut: dissolving in water, bouncing
 physics, and gumdrop rain. Gumdrops exist to be piled up and chased.
 
+## Phase 4 — Palm trees
+
+A third object kind alongside rainbow and unicorn, glyph `'🌴'`.
+
+Objects already stamp an `OBJECT` footprint into the grid, so **sand piles
+against the trunk and water pools around it with no new sim code**.
+
+The sway is purely a render-layer effect in `PlayArea.svelte`: translate to the
+base of the trunk, `ctx.rotate(Math.sin(now * speed + phase) * amplitude)`,
+draw the glyph, restore. Two details carry it — pivot at the **base** so it
+bends like a trunk instead of spinning like a pinwheel, and give each tree its
+own **phase offset** so a row ripples rather than swaying in lockstep. This
+matches the existing `Math.sin` shimmer pattern already in the render loop.
+
+**Known approximation:** the drawn glyph sways while its collision footprint
+stays put. At a few degrees of gentle sway this reads as breeze, not as a bug.
+Accepted deliberately.
+
+Deferred as YAGNI: a shared global wind value driving both palm sway and
+fog/rain drift. Nice, not needed.
+
 ## Phase 5 — The poodle
 
 The centerpiece, and deliberately **not** a grid element. Moving creatures in a
@@ -146,27 +167,6 @@ Shipped in that order as 5a through 5e — each step is independently playable,
 so she gets something new every time. 5a (trot toward her finger, sparkle
 pawprints) is the smallest thing worth shipping; the rest layer on top without
 reworking it.
-
-## Phase 4 — Palm trees
-
-A third object kind alongside rainbow and unicorn, glyph `'🌴'`.
-
-Objects already stamp an `OBJECT` footprint into the grid, so **sand piles
-against the trunk and water pools around it with no new sim code**.
-
-The sway is purely a render-layer effect in `PlayArea.svelte`: translate to the
-base of the trunk, `ctx.rotate(Math.sin(now * speed + phase) * amplitude)`,
-draw the glyph, restore. Two details carry it — pivot at the **base** so it
-bends like a trunk instead of spinning like a pinwheel, and give each tree its
-own **phase offset** so a row ripples rather than swaying in lockstep. This
-matches the existing `Math.sin` shimmer pattern already in the render loop.
-
-**Known approximation:** the drawn glyph sways while its collision footprint
-stays put. At a few degrees of gentle sway this reads as breeze, not as a bug.
-Accepted deliberately.
-
-Deferred as YAGNI: a shared global wind value driving both palm sway and
-fog/rain drift. Nice, not needed.
 
 ## Code health work, scoped to what we are touching
 
